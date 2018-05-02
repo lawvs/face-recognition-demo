@@ -53,8 +53,30 @@ def loadImgs(filename):
     labels = numpy.array(labels)
     return (images, labels)
 
+def resizeImgs(images, width, height):
+    '''
+    统一图像大小
+    '''
+    for img in images:
+        # 获取图像尺寸
+        sourceHeight = img.shape[0]
+        sourceWidth = img.shape[1]
+        if sourceWidth == width and sourceHeight == height:
+            continue
+        newImg = cv2.resize(img, (width, height))
+        cv2.imwrite(file, newImg)
+        # cv2.imshow(file, newImg)
+        print('process {} success'.format(file))
+
 if __name__ == '__main__':
     # data set
     filename = 'data-set/list.txt'
+    width = 92
+    height = 112
+
+    print('loading images')
     (images, labels) = loadImgs(filename)
+    print('unifying image size')
+    resizeImgs(images, width, height) # uniform size
+    print('training model')
     trainModel(images, labels)
