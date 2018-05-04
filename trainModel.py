@@ -8,20 +8,20 @@ def trainModel(images, labels):
     训练模型
     '''
     if len(images) < 2:
-        raise Exception('the data set is too small');
-    model = cv2.face.EigenFaceRecognizer_create();
-    model.train(images, labels);
-    model.save('model/facePCAModel.xml');
+        raise Exception('the data set is too small')
+    model = cv2.face.EigenFaceRecognizer_create()
+    model.train(images, labels)
+    model.save('model/facePCAModel.xml')
     print('facePCAModel training success')
 
-    model1 = cv2.face.FisherFaceRecognizer_create();
-    model1.train(images, labels);
-    model1.save('model/faceFisherModel.xml');
+    model1 = cv2.face.FisherFaceRecognizer_create()
+    model1.train(images, labels)
+    model1.save('model/faceFisherModel.xml')
     print('faceFisherModel training success')
 
-    model2 = cv2.face.LBPHFaceRecognizer_create();
-    model2.train(images, labels);
-    model2.save('model/faceLBPHModel.xml');
+    model2 = cv2.face.LBPHFaceRecognizer_create()
+    model2.train(images, labels)
+    model2.save('model/faceLBPHModel.xml')
     print('faceLBPHModel training success')
     return
 
@@ -36,7 +36,7 @@ def loadImgs(filename):
         lines = f.readlines()
         for line in lines:
             if line == ' ':
-                break;
+                break
             sample = line.strip().split(' ')
             if len(sample) < 2:
                 continue
@@ -50,7 +50,6 @@ def loadImgs(filename):
 
             images.append(img)
             labels.append(label)
-    labels = numpy.array(labels)
     return (images, labels)
 
 def resizeImgs(images, width, height):
@@ -79,4 +78,4 @@ if __name__ == '__main__':
     print('unifying image size')
     resizeImgs(images, width, height) # uniform size
     print('training model')
-    trainModel(images, labels)
+    trainModel(images, numpy.array(labels))
