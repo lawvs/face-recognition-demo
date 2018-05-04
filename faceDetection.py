@@ -2,6 +2,15 @@
 # -*- coding: utf-8 -*-
 import cv2
 
+face_cascade_name = 'haarcascades/haarcascade_frontalface_default.xml'
+eyes_cascade_name = 'haarcascades/haarcascade_eye_tree_eyeglasses.xml'
+
+# 加载分类器
+# 定义人脸分类器
+face_cascade = cv2.CascadeClassifier(face_cascade_name)
+# 定义人眼分类器
+eye_cascade = cv2.CascadeClassifier(eyes_cascade_name)
+
 def resizeImage(image, width=None, height=None, inter=cv2.INTER_AREA):
     newsize = (width, height)
     #获取图像尺寸
@@ -20,18 +29,24 @@ def resizeImage(image, width=None, height=None, inter=cv2.INTER_AREA):
     newimage = cv2.resize(image, newsize, interpolation=inter)
     return newimage
 
-def detect(filename):
+def detectFaces(img):
     '''
     人脸检测
     '''
-    face_cascade_name = 'haarcascades/haarcascade_frontalface_default.xml'
-    eyes_cascade_name = 'haarcascades/haarcascade_eye_tree_eyeglasses.xml'
-    # 加载分类器
-    # 定义人脸分类器
-    face_cascade = cv2.CascadeClassifier(face_cascade_name)
-    # 定义人眼分类器
-    eye_cascade = cv2.CascadeClassifier(eyes_cascade_name)
+    global face_cascade
+    minSize = (100, 100) # minSize 为目标的最小尺寸
+    maxSize = (1000, 1000) # maxSize 为目标的最大尺寸
+    faces = face_cascade.detectMultiScale(img, 1.1, 5, cv2.CASCADE_SCALE_IMAGE, minSize, maxSize)
+    return faces
 
+def detectEyes(img):
+    global eye_cascade
+    eyes = eye_cascade.detectMultiScale(img, 1.1, 2, cv2.CASCADE_SCALE_IMAGE, (2, 2))
+    return eyes
+
+def main():
+    # image
+    filename = 'image/1.jpg'
     # 读取图片
     img = cv2.imread(filename)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) # 灰度
@@ -41,25 +56,21 @@ def detect(filename):
     width = img.shape[1]
     print('image size:', width, height)
 
-    # 人脸检测
-    minSize = (100, 100) # minSize 为目标的最小尺寸
-    maxSize = (1000, 1000) # maxSize 为目标的最大尺寸
-    faces = face_cascade.detectMultiScale(gray, 1.1, 5, cv2.CASCADE_SCALE_IMAGE, minSize, maxSize)
+    faces = detectFaces(gray)
     print('faces num:', len(faces))
 
-    if len(faces) > 0:
-        for faceRect in faces:
-            x, y, w, h = faceRect
-            roi_gray = gray[y:y + h, x:x + w]
-            roi_color = img[y:y + h, x:x + w]
-            # cv2.imshow('face' + str(x), roi_color) # face
-            # cv2.imwrite('data-set/{}.jpg'.format(x), roi_color) # save
-            cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2, 8, 0)
+    for faceRect in faces:
+        x, y, w, h = faceRect
+        roi_gray = gray[y:y + h, x:x + w]
+        roi_color = img[y:y + h, x:x + w]
+        # cv2.imshow('face' + str(x), roi_color) # face
+        # cv2.imwrite('data-set/{}.jpg'.format(x), roi_color) # save
+        cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2, 8, 0)
 
-            # 人眼识别
-            eyes = eye_cascade.detectMultiScale(roi_gray, 1.1, 2, cv2.CASCADE_SCALE_IMAGE, (2, 2))
-            for (ex, ey, ew, eh) in eyes:
-                cv2.rectangle(roi_color, (ex, ey), (ex + ew, ey + eh), (0, 255, 0), 2)
+        # 人眼识别
+        eyes = detectEyes(roi_gray)
+        for (ex, ey, ew, eh) in eyes:
+            cv2.rectangle(roi_color, (ex, ey), (ex + ew, ey + eh), (0, 255, 0), 2)
 
     #缩放
     newW = 700
@@ -73,7 +84,7 @@ def detect(filename):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
+
 if __name__ == '__main__':
-    # image
-    filename = 'image/4.jpg'
-    detect(filename)
+    main()
+
