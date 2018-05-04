@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# -*- coding: utf-8  -*-
+# -*- coding: utf-8 -*-
 import cv2
 
 def resizeImage(image, width=None, height=None, inter=cv2.INTER_AREA):
