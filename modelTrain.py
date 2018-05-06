@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import numpy
 import cv2
+import os
 
 def trainModel(images, labels):
     '''
@@ -31,19 +32,18 @@ def loadImgs(filename):
     '''
     images = []
     labels = []
-
-    with open(filename, 'r', encoding='utf_8') as f:
-        lines = f.readlines()
-        for line in lines:
-            if line == ' ':
-                break
-            sample = line.strip().split(' ')
-            if len(sample) < 2:
-                continue
-            img = cv2.imread(sample[0])
-
-            label = sample[1]
-            label = int(label)
+    rootDir = 'data-set/'
+    # 遍历文件夹
+    for dir in os.listdir(rootDir):
+        if not os.path.isdir(rootDir + dir):
+            continue
+        print('loading ' + rootDir + dir)
+        # 标签为文件夹名
+        label = dir
+        label = int(label)
+        for file in os.listdir(rootDir + dir):
+            filename = rootDir + dir + '/' + file
+            img = cv2.imread(filename)
 
             if len(img.shape) == 3 :
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) # 灰度
@@ -56,16 +56,20 @@ def resizeImgs(images, width, height):
     '''
     统一图像大小
     '''
+    list = []
     for img in images:
         # 获取图像尺寸
         sourceHeight = img.shape[0]
         sourceWidth = img.shape[1]
         if sourceWidth == width and sourceHeight == height:
+            list.append(newImg)
             continue
         newImg = cv2.resize(img, (width, height))
-        cv2.imwrite(file, newImg)
+        list.append(newImg)
+
+        # cv2.imwrite(file, newImg)
         # cv2.imshow(file, newImg)
-        print('process {} success'.format(file))
+    return list
 
 if __name__ == '__main__':
     # data set
@@ -76,6 +80,6 @@ if __name__ == '__main__':
     print('loading images')
     (images, labels) = loadImgs(filename)
     print('unifying image size')
-    resizeImgs(images, width, height) # uniform size
+    images = resizeImgs(images, width, height) # uniform size
     print('training model')
     trainModel(images, numpy.array(labels))
