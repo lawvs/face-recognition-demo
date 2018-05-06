@@ -10,20 +10,29 @@ def trainModel(images, labels):
     '''
     if len(images) < 2:
         raise Exception('the data set is too small')
-    model = cv2.face.EigenFaceRecognizer_create()
-    model.train(images, labels)
-    model.save('model/facePCAModel.xml')
-    print('facePCAModel training success')
+    try:
+        model = cv2.face.EigenFaceRecognizer_create()
+        model.train(images, labels)
+        model.save('model/facePCAModel.xml')
+        print('facePCAModel training success')
+    except Exception as e:
+        print('facePCAModel training fail')
+        # raise e
 
-    model1 = cv2.face.FisherFaceRecognizer_create()
-    model1.train(images, labels)
-    model1.save('model/faceFisherModel.xml')
-    print('faceFisherModel training success')
+    try:
+        model1 = cv2.face.FisherFaceRecognizer_create()
+        model1.train(images, labels)
+        model1.save('model/faceFisherModel.xml')
+        print('faceFisherModel training success')
+    except Exception as e:
+        print('faceFisherModel training fail')
+        # raise e
 
-    model2 = cv2.face.LBPHFaceRecognizer_create()
+
+    model2 = cv2.face.EigenFaceRecognizer_create()
     model2.train(images, labels)
-    model2.save('model/faceLBPHModel.xml')
-    print('faceLBPHModel training success')
+    model2.save('model/faceEigenModel.xml')
+    print('faceEigenModel training success')
     return
 
 def loadImgs(filename):
@@ -45,7 +54,7 @@ def loadImgs(filename):
             filename = rootDir + dir + '/' + file
             img = cv2.imread(filename)
 
-            if len(img.shape) == 3 :
+            if len(img.shape) >= 3 :
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) # 灰度
 
             images.append(img)
@@ -62,7 +71,7 @@ def resizeImgs(images, width, height):
         sourceHeight = img.shape[0]
         sourceWidth = img.shape[1]
         if sourceWidth == width and sourceHeight == height:
-            list.append(newImg)
+            list.append(img)
             continue
         newImg = cv2.resize(img, (width, height))
         list.append(newImg)
