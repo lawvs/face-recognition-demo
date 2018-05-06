@@ -3,8 +3,8 @@
 import cv2
 import glob
 
-face_cascade_name = 'haarcascades/haarcascade_frontalface_default.xml'
-eyes_cascade_name = 'haarcascades/haarcascade_eye_tree_eyeglasses.xml'
+face_cascade_name = 'model/haarcascade_frontalface_default.xml'
+eyes_cascade_name = 'model/haarcascade_eye_tree_eyeglasses.xml'
 
 # 加载分类器
 # 定义人脸分类器

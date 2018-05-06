@@ -3,7 +3,7 @@
 import cv2
 import faceDetection
 
-modelName = 'model/faceEigenModel.xml'
+modelName = 'model/facePCAModel.xml'
 faceRecognizer = cv2.face.EigenFaceRecognizer_create()
 faceRecognizer.read(modelName) # 读取模型
 
@@ -37,7 +37,7 @@ def identify(img):
         x, y, w, h = faceRect
         face = img[y:y + h, x:x + w]
     else :
-        return None
+        return -1, -1
     label, confidence = predict(face)
     return label, confidence
 
